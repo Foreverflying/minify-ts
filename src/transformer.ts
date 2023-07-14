@@ -10,7 +10,6 @@ interface MinifyTsOptions {
 }
 
 const decoder = new TextDecoder()
-// const fileMap = new Map<string, string>()
 let fileRenameMap: Map<string, Map<number, string>> | undefined
 
 const getPosOfNode = (node: ts.Node) => {
@@ -29,7 +28,6 @@ const getPosOfNode = (node: ts.Node) => {
 
 const fileCallback = (srcPath: string, _destPath: string, content?: Uint8Array[]) => {
     if (content) {
-        // fileMap.set(srcPath, content.map(buff => decoder.decode(buff)).join(''))
         const renameMap = new Map<number, string>()
         fileRenameMap!.set(srcPath, renameMap)
         let pos = 0
@@ -47,14 +45,15 @@ const fileCallback = (srcPath: string, _destPath: string, content?: Uint8Array[]
 
 export const createMinifyTransformer = (minifyTsOptions: MinifyTsOptions) => {
     return function minifyTransformer(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> {
-        const getVisitFunc = (sourceFile: ts.SourceFile, renameMap?: Map<number, string>) => {
+        const getVisitFunc = (renameMap?: Map<number, string>) => {
             if (renameMap) {
-                const { createIdentifier, updateSourceFile } = ts.factory
+                const { createIdentifier } = ts.factory
                 let shift = 0
-                const getLineAndCharacterOfPosition = (pos: number): ts.LineAndCharacter => {
-                    return sourceFile.getLineAndCharacterOfPosition(pos + shift)
-                }
+                let sourceFile: ts.SourceFile | undefined
                 const visit = (node: ts.Node): ts.Node => {
+                    if (!sourceFile) {
+                        sourceFile = node as ts.SourceFile
+                    }
                     if (node.kind === SyntaxKind.Identifier) {
                         const { text } = node as ts.Identifier
                         const pos = getPosOfNode(node)
@@ -70,7 +69,7 @@ export const createMinifyTransformer = (minifyTsOptions: MinifyTsOptions) => {
                                 source: {
                                     fileName: sourceFile.fileName,
                                     text: text,
-                                    getLineAndCharacterOfPosition: getLineAndCharacterOfPosition,
+                                    getLineAndCharacterOfPosition: sourceFile.getLineAndCharacterOfPosition,
                                 },
                             })
                             return ts.visitEachChild(identifier, visit, context)
@@ -100,14 +99,7 @@ export const createMinifyTransformer = (minifyTsOptions: MinifyTsOptions) => {
                 }
                 minify(minifierOptions, fileCallback, compilerOptions)
             }
-            const visit = getVisitFunc(node, fileRenameMap.get(node.fileName))
-            // const visit = getVisitFunc(node)
-            // const { updateSourceFile } = ts.factory
-            // const newFile = fileMap.get(node.fileName)
-            // if (newFile) {
-            //     const newSource = ts.createSourceFile('_', newFile, ts.ScriptTarget.ESNext)
-            //     updateSourceFile(node, newSource.statements)
-            // }
+            const visit = getVisitFunc(fileRenameMap.get(node.fileName))
             return ts.visitEachChild(node, visit, context)
         }
     }

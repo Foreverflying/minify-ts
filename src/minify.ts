@@ -165,7 +165,7 @@ class Minifier {
     private findExportsInFile(typeChecker: ts.TypeChecker, fileNode: ts.Node, fileIndex: number) {
         const { _exportEntryMap, _fileMap } = this
         const symbol = typeChecker.getSymbolAtLocation(fileNode)!
-        const exportsArr = typeChecker.getExportsOfModule(symbol)
+        const exportsArr = symbol ? typeChecker.getExportsOfModule(symbol) : []
         for (const entry of exportsArr) {
             const declarations = entry.getDeclarations()!
             let declareNode = declarations[0] as ts.NamedDeclaration

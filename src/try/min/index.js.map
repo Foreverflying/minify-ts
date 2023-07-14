@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "names": [
+    "n",
+    "hello",
+    "console",
+    "log"
+  ],
+  "sources": [
+    "../index.ts"
+  ],
+  "mappings": "CAAA,SAAUA,IACN,IAAIC,EAAQ,KACZC,QAAQC,IAAIF,EACf,EAHD"
+}

@@ -14,11 +14,51 @@
       ],
       "program": "${workspaceFolder}/out/cli.js",
       "args": [
+        "-s",
         "src",
         "min",
         "cli.ts",
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Transformer",
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/out/tryTransformer.js",
+      "args": [],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Test File",
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/try/index.js",
+      "args": [],
+      // "preLaunchTask": "tsc: build - tsconfig.json",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Tenser result",
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/try/out/index.js",
+      "args": [],
+      // "preLaunchTask": "tsc: build - tsconfig.json",
       "sourceMaps": true
     }
   ]
